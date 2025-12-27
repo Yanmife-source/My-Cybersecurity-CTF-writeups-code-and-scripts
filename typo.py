@@ -45,8 +45,13 @@ def soup(driver):
     info=obe.find_all('div',class_="info",limit=20)
     for  data in info:
         name=data.find('h3',class_='name').text.strip()
-        price=data.find('div',class_='prc').text.strip()
-        print( f"Product name: {name}   Price: {price}\n")
+        new_price=data.find('div',class_='prc').text.strip()
+        discount=data.find('div',class_='bdg _dsct _sm').text.strip()
+        if not (old_price:=data.find('div',class_='old').text.strip()):
+            old_price=None
+            print( f"Product name: {name} Price: {new_price}\n")
+        else:
+            print( f"Product name: {name}   Price: Now {new_price} Old price: {old_price}({discount} off)\n")
 
 
 if __name__=="__main__":

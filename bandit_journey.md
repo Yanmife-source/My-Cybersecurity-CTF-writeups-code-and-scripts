@@ -1,10 +1,10 @@
-# My Overthewire Bandit wargame journey write-up series
+# My Overthewire Bandit wargame journey write-up series 
 
 ## Level 0 to 1 (Initial login)
 **Goal:** To login using SSH and find the password in a file 'readme' in the home directory
 
 ### Procedure: 
-1. **Login:** Connect using SSH with the following command using the given credenials `ssh bandit0@bandit.labs.overthewire.org -p 2220`
+1. **Login:** Connect using SSH with the following command using the given credentials `ssh bandit0@bandit.labs.overthewire.org -p 2220`
 2. **Locate file:** Use the 'ls' command to know the contents of the home directory
 3. **Read the file:** Using the command 'cat',I read the file by entering `cat readme`
 
@@ -30,3 +30,6 @@
 
 ## Level 2 to 3
 **Goal:** 
+
+### Procedure:
+1. 
