@@ -43,8 +43,6 @@ class OAUportal:
 
         if "profile" in response.text:
             print("Login successful")
-            is_login=True
-            get_results()
         else:
             print("Login unsuccessful")   
             
@@ -52,7 +50,7 @@ class OAUportal:
 
     def get_raw_score(self):
         raw_url="https://eportal.oauife.edu.ng/viewrawscore1.php"
-        print("Getting results...")
+        print("Getting raw score...")
         raw_response=self.session.get(raw_url)
         soup=BeautifulSoup(raw_response.text,'html.parser')
         table=soup.find('table',class_='profile')
@@ -94,16 +92,16 @@ class OAUportal:
             else:
                 ...
     # To get resutls
-    def get_results(self,session='All'):
+    def get_results(self,session='All',year='1'):
         result_url='https://eportal.oauife.edu.ng/result_check1.php'
-        initial_res=session.get(result_url)
+        initial_res=self.session.get(result_url)
         get_results_url='https://eportal.oauife.edu.ng/result_check2.php'
         data={
             'Session':session,
-            'Semester':'1',
+            'Semester':year,
             'Command1':'Check Results'
         }
-        display_res=session.post(get_results_url,data=data)
+        display_res=self.session.post(get_results_url,data=data)
         print(f'{display_res.url} | {display_res.status_code}')
         results=BeautifulSoup(display_res.text,'html.parser')
         tot_results=results.find_all('table')
@@ -112,10 +110,10 @@ class OAUportal:
             rows=sem.find_all('tr')
             for row in rows:
                 print(row[-1])
-        # def save():
-        #     with open (results.csv,'w',newline='') as res:
-        #         columns=['Course code','Course unit','Score']
-        #         with3r=csv.Dictwriter(res,fieldnames=columns)
+        def save():
+            with open (results.csv,'w',newline='') as res_score:
+                columns=['Course code','Course unit','Score']
+                writerr=csv.Dictwriter(res_score,fieldnames=columns)
 
 
     
