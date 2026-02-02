@@ -109,12 +109,14 @@ class OAUportal:
         for sem in tot_results[0::2]:
             rows=sem.find_all('tr')
             for row in rows:
-                print(row[-1])
-        def save():
-            with open (results.csv,'w',newline='') as res_score:
+                print(row[-1]).text.strip()
+                
+        def save(self,file):
+            with open (file,'w',newline='') as res_score:
                 columns=['Course code','Course unit','Score']
-                writerr=csv.Dictwriter(res_score,fieldnames=columns)
+                writer=csv.Dictwriter(res_score,fieldnames=columns)
+                writer.writeheader()
+                writer.writerows[row]
+                print("Data successfully written into results.csv")
 
 
-    
-    
