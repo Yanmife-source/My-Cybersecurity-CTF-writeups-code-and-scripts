@@ -9,7 +9,7 @@ class OAUportal:
         ...
         
 
-
+    # Function to login into the portal and create a session for the user
     def login(self,username,password,year=2024,semester=1):
         self.username=username
         self.password=password
