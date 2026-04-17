@@ -23,7 +23,9 @@ def main():
     driver=webdriver.Chrome(service=service,options=options)
     
     # To navigate to the website
-    driver.get("https://jumia.com.ng")
+    global base_url
+    base_url="https://jumia.com.ng"
+    driver.get(base_url)
     time.sleep(1.5)
 
     # Wait till the search bar is present
@@ -35,30 +37,35 @@ def main():
     time.sleep(1.5)
     # Parses he page for products name and price
     print("Parsing...")
-    soup(driver)
     
+    # Scraping logic here
+    soup(driver)
+
     # Exit the webiste and close the browser
     driver.quit()
 
 def soup(driver):
     prices=[]
-    page=driver.page_source
-    obe=BeautifulSoup(page,'html.parser')
-    info=obe.find_all('div',class_="info",limit=20)
-    for  data in info:
-        name=data.find('h3',class_='name').text.strip()
-        new_price=data.find('div',class_='prc').text.strip()
-        #discount=data.find('div',class_='bdg _dsct _sm').text.strip()
-      
-        price_dict={}
+    current_page_url = driver.current_url
+    for page_num in range(1, 6): # To parse the first 5 pages
+        driver.get(f"{current_page_url}&page={page_num}")
+        page=driver.page_source
+        obe=BeautifulSoup(page,'html.parser')
+        info=obe.find_all('div',class_="info")
+        for  data in info:
+            name=data.find('h3',class_='name').text.strip()
+            new_price=data.find('div',class_='prc').text.strip()
+            #discount=data.find('div',class_='bdg _dsct _sm').text.strip()
         
-        if name and new_price:
-            print( f"Product name: {name} Price: {new_price}\n")
-            price_dict["Product name"]= name
-            price_dict["Price"]=new_price
-            prices.append(price_dict)
-        else:
-            print("This product couldn't be displayed")
+            price_dict={}
+            
+            if name and new_price:
+                print( f"Product name: {name} Price: {new_price}\n")
+                price_dict["Product name"]= name
+                price_dict["Price"]=new_price
+                prices.append(price_dict)
+            else:
+                print("This product couldn't be displayed")
     headers=['Product name','Price']
 
     #Save the result to a csv file
