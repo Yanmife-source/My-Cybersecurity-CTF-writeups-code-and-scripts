@@ -66,12 +66,8 @@ live in the rendered HTML.
 
 3. **Craft and Submit the Payload:** Navigate to the level URL and change the
 `next` parameter to `javascript:alert(1)`:
-`https://xss-game.appspot.com/level5/frame?next=javascript:alert(1)`
-
-This turns the anchor tag into:
-`<a href="javascript:alert(1)">Next >></a>`
-
-Then click the "Next >>" link. The browser interprets the `href` as a
+`https://xss-game.appspot.com/level5/frame?next=javascript:alert(1)`. This turns the anchor tag into:
+`<a href="javascript:alert(1)">Next >></a>` .Then click the "Next >>" link. The browser interprets the `href` as a
 JavaScript URI rather than a navigation URL and executes `alert(1)` in the
 context of the page, solving the level — without a single new element being
 injected into the DOM.
