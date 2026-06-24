@@ -15,17 +15,17 @@
 2. How to run Remote Code Execution
 
 
-## Cross Site Scripting(Google XSS game)
+## Cross Site Scripting (Google XSS game)
 **Goal:** To inject a script to pop up an alert() in the context of the application.
-### Level 1 procedures(Regular XSS flaw)
+### Level 1 procedures (Regular XSS flaw)
 1. **Find the target and inject the XSS payload:**Find the box to inject the XSS payload and enter the classic `<script>alert(1)</script>` which is a basic XSS paylaod to expliot improper handling of user data
 
-### Level 2 procedures(Stored XSS flaw)
+### Level 2 procedures (Stored XSS flaw)
 1.  **Bypass innerHTML Script Restrictions:** The XSS flaw in this level is a Stored XSS flaw  and thusStandard `<script>alert(1)</script>` tags will fail here. Web browsers do not execute <script> elements injected via innerHTML to prevent late-stage execution risks. Instead, utilize an alternative HTML tag that triggers an execution event natively upon loading.
 2. **Craft and Submit the Payload:** Inject a broken image element configured with an onerror event handler with the code `<img src=x onerror=alert(1)>`
 3. **Verify Persistent Execution:**Once submitted, the browser attempts to load the image x, fails, and executes alert(1). Because the level stores this input, the code remains in the post history. Every time you reload the browser tab, the application pulls the payload from its data store, renders it, and automatically solves the level again.
 
-### Levele 3 procedures(Reflected XSS flaw)
+### Levele 3 procedures (Reflected XSS flaw)
 1. **Find the target:**Since you can't enter your payload anywhere in the application, you will have to manually edit the address in the URL bar indicated in the level .
 2. **Figure out how to exploit the XSS the vulnerability:**Usng the  url and code available `https://xss-game.appspot.com/level3/frame#1` and the code `html += "<img src='/static/level3/cloud" + num + ".jpg' />"` which directly substistutes page nuber into the url and allows us to pop up an alert using `https://xss-game.appspot.com/level3/frame#1'><script>alert(1)</script>` to both close the src attribute and to close the tag thus allowing us to execute the alert() in between scripts tags.
 
@@ -46,3 +46,32 @@ and submit. This turns the onload attribute into:
 `onload="startTimer(''+alert(1)+'');"` 
 which is valid JS — the string concatenation executes alert(1) as the argument 
 to startTimer(), popping the alert and solving the level.
+
+
+### Level 5 procedures (DOM-based XSS via javascript: URI)
+
+1. **Find the target:** The vulnerability is in the `next` URL parameter. The
+server-side template reflects your input directly into the `href` attribute of
+an existing anchor tag:
+`<a href="{{ next }}">Next >></a>`
+
+2. **Figure out how to exploit the vulnerability:** Since your input lands
+directly inside an `href` attribute, standard tag injection won't work — the
+template engine escapes `<` and `>` into `&lt;` and `&gt;`, preventing you
+from injecting new elements. However, HTML entity encoding does not validate
+URI *schemes*. Browsers treat the content of an `href` as a URI and will
+execute any `javascript:` URI when the link is clicked — no new DOM elements
+needed. Submitting `'` or a broken URL confirms the parameter is reflected
+live in the rendered HTML.
+
+3. **Craft and Submit the Payload:** Navigate to the level URL and change the
+`next` parameter to `javascript:alert(1)`:
+`https://xss-game.appspot.com/level5/frame?next=javascript:alert(1)`
+
+This turns the anchor tag into:
+`<a href="javascript:alert(1)">Next >></a>`
+
+Then click the "Next >>" link. The browser interprets the `href` as a
+JavaScript URI rather than a navigation URL and executes `alert(1)` in the
+context of the page, solving the level — without a single new element being
+injected into the DOM.
