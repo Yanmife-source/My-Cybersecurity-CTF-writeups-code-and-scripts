@@ -27,7 +27,7 @@
 
 ### Levele 3 procedures (Reflected XSS flaw)
 1. **Find the target:**Since you can't enter your payload anywhere in the application, you will have to manually edit the address in the URL bar indicated in the level .
-2. **Figure out how to exploit the XSS the vulnerability:**Usng the  url and code available `https://xss-game.appspot.com/level3/frame#1` and the code `html += "<img src='/static/level3/cloud" + num + ".jpg' />"` which directly substistutes page nuber into the url and allows us to pop up an alert using `https://xss-game.appspot.com/level3/frame#1'><script>alert(1)</script>` to both close the src attribute and to close the tag thus allowing us to execute the alert() in between scripts tags.
+2. **Figure out how to exploit the XSS vulnerability:**Usng the  url and code available `https://xss-game.appspot.com/level3/frame#1` and the code `html += "<img src='/static/level3/cloud" + num + ".jpg' />"` which directly substistutes page nuber into the url and allows us to pop up an alert using `https://xss-game.appspot.com/level3/frame#1'><script>alert(1)</script>` to both close the src attribute and to close the tag thus allowing us to execute the alert() in between scripts tags.
 
 ### Level 4 procedures (DOM-based XSS via JS injection)
 1. **Find the target:** The vulnerability is in the timer input field on the page. 
@@ -71,3 +71,34 @@ live in the rendered HTML.
 JavaScript URI rather than a navigation URL and executes `alert(1)` in the
 context of the page, solving the level — without a single new element being
 injected into the DOM.
+
+### Level 6 procedures (DOM-based XSS via data: URI scheme bypass)
+
+1. **Find the target:** The vulnerability is in the URL fragment (the part
+after `#`). The page's `includeGadget()` function reads `window.location.hash`
+and injects its value directly as the `src` of a dynamically created `<script>`
+element:
+`scriptEl.src = url;`
+`document.head.appendChild(scriptEl);`
+
+2. **Figure out how to exploit the vulnerability:** The only defence is a
+regex that blocks URLs beginning with `http://` or `https://`:
+`if (url.match(/^https?:\/\//))` 
+This leaves every other URI scheme unblocked. The `data:` URI scheme lets
+you embed content directly in a URL without a network request — including
+executable JavaScript via `data:text/javascript,<code>`. Because the filter
+only checks for `http`/`https`, passing a `data:` URI bypasses it entirely.
+The script tag the app creates itself becomes the delivery mechanism, so no
+new elements need to be injected manually.
+
+3. **Craft and Submit the Payload:** Navigate to the level URL and set the
+fragment to the `data:` URI payload:
+`https://xss-game.appspot.com/level6/frame#data:text/javascript,alert(1)`
+
+The app reads the fragment, passes it through the (ineffective) filter, and
+appends:
+`<script src="data:text/javascript,alert(1)"></script>`
+
+The browser treats the `src` as an inline script resource, executes
+`alert(1)` immediately on page load without any user interaction, and solves
+the level.
